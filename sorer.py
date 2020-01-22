@@ -53,7 +53,9 @@ def find_tag(line, index):
         return ""
     
     i, j = result.span()
-    return line[i + 1: j]
+    start = index + i
+    end = index + j - 1
+    return line[start:end]
     
 def parse_lines(lines):
     rows = []
@@ -62,7 +64,6 @@ def parse_lines(lines):
         line_index = 0
         entries = []
         while(line_index < len(line)):
-            print(line_index)
             current = line[line_index]
             if (current == " "):
                 line_index += 1
@@ -77,7 +78,7 @@ def parse_lines(lines):
                     print("malformed entry")
                     break
 
-                line_index += len(matched) + 1
+                line_index += len(matched) + 2
             else:
                 break
 
