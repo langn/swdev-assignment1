@@ -7,7 +7,7 @@ EMPTY_RE = r"\s*>"
 BOOL_RE = r"\s*(0|1)\s*>"
 INT_RE = r"\s*(-|\+)?\d*\s*>"
 FLOAT_RE = r"\s*(-|\+)?\d*\.?\d*\s*>"
-STRING_RE = r"\s*(?:(?!>)(\S)*)\s*>"
+STRING_RE = r"\s*(?:(?!>)(\S))*\s*>"
 STRING_RE_QUOTES = r"\s\"(?:(?!>)(.*))*\"\s"
 
 parser = argparse.ArgumentParser(description='data adaptor')
@@ -40,11 +40,11 @@ def find_tag(line, index):
                 # tag is not FLOAT
                 if (not result):
                     #print("hi")
-                    result = re.match(STRING_RE_QUOTES, to_scan)
+                    result = re.match(STRING_RE, to_scan)
                     # tag is not a regular string
                     if (not result):
                         #print('hi')
-                        result = re.match(STRING_RE, to_scan)
+                        result = re.match(STRING_RE_QUOTES, to_scan)
                         # tag cannot be matched, return None
                         if (not result):
                             return result
