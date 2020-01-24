@@ -7,6 +7,8 @@
 class String : public Object {
 public:
 
+  /** VARIABLES */
+  
   char* str_; // the string value stored
   size_t size_; // the length of the string
 

@@ -8,6 +8,10 @@
 class Object {
 public:
 
+  /** VARIABLES */
+  
+  size_t hash_; // saved hash value
+
   /** CONSTRUCTORS & DESTRUCTORS **/
 
   /** Default Object constructor */

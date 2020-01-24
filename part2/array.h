@@ -7,6 +7,11 @@
 class Array : public Object {
 public:
 
+  /** VARIABLES */
+  
+  size_t length_; // length of the Array
+  Object** data_; // contents of the Array
+
   /** CONSTRUCTORS & DESTRUCTORS **/
 
   /** Creates an Array of desired size */
