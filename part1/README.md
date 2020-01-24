@@ -21,13 +21,11 @@ optional arguments:
                         print the value at the column offset
   -is_missing_idx col_idx, col_offset col_idx, col_offset
                         is there a missing in the specific column offset
-  -t                    run with this flag to run tests only
 
-** One of the follwing must be passed into the program **
+** One of the foll0wing must be passed into the program **
     -print_col_type
     -print_col_idx 
     -is_missing_idx 
-    -t
 
 ### BEHAVIOR:
 - If LEN is shorter than the file length, the program will ignore the last line, as it could be malformed

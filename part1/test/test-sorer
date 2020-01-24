@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+
+import imp
+sorer = imp.load_source('sorer-helper', 'sorer_helper.py')
+
+TEST_FILE = "test/text.txt"
+
+# sorer methods
+open_file = sorer.open_file
+parse_lines = sorer.parse_lines
+find_schema = sorer.find_schema
+Types = sorer.Types
+print_col_type = sorer.print_col_type
+print_col_idx = sorer.print_col_idx
+construct_matrix = sorer.construct_matrix
+is_missing_idx = sorer.is_missing_idx
+
+# open an entire file
+lines = open_file(TEST_FILE, 2000, 0)
+collection = parse_lines(lines)
+schema = find_schema(collection)
+
+# Schema tests
+val = print_col_type(schema, 0)
+assert(val == Types.afloat.value)
+val = print_col_type(schema, 1)
+assert(val == Types.string.value)
+val = print_col_type(schema, 2)
+assert(val == Types.string.value)
+val = print_col_type(schema, 3)
+assert(val == Types.string.value)
+val = print_col_type(schema, 4)
+assert(val == Types.integer.value)
+val = print_col_type(schema, 5)
+assert(val == Types.boolean.value)
+val = print_col_type(schema, 6)
+assert(val == Types.string.value)
+val = print_col_type(schema, 7)
+assert(val == Types.afloat.value)
+val = print_col_type(schema, 8)
+assert(val == Types.string.value)
+val = print_col_type(schema, 9)
+assert(val == Types.string.value)
+
+matrix = construct_matrix(schema, collection)
+
+# column value tests
+val = print_col_idx(matrix, 1, 0)
+assert(val == "world")
+val = print_col_idx(matrix, 0, 1)
+assert(val == "3.1")
+val = print_col_idx(matrix, 0, 0)
+assert(val == "")
+val = print_col_idx(matrix, 3, 1)
+assert(val == "")
+val = print_col_idx(matrix, 7, 6)
+assert(val == "")
+val = print_col_idx(matrix, 2, 4)
+assert(val == "<")
+val = print_col_idx(matrix, 2, 10)
+assert(val == "is just another test!!!!!")
+val = print_col_idx(matrix, 4, 10)
+assert(val == "5")
+val = print_col_idx(matrix, 6, 10)
+assert(val == "funky $trings")
+val = print_col_idx(matrix, 7, 10)
+assert(val == "+2.0")
+
+# open an offset file
+lines = open_file(TEST_FILE, 600, 20)
+collection = parse_lines(lines)
+schema = find_schema(collection)
+matrix = construct_matrix(schema, collection)
+# last row is cut from schema
+assert(len(schema) == 9)
+val = print_col_idx(matrix, 1, 0)
+# first row is cut from schema
+assert(val == "")
+val = is_missing_idx(matrix, 1, 0)
+assert(val == "1")
+
+print("Tests passing")

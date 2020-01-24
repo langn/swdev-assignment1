@@ -8,4 +8,4 @@ bad row
 <hi!><chase> <5> <"hi!" > <+2.3>  <"maria">
 <2.3><this><"is just another test"><with><4><1><"more things to trip us up!"><+2.5><>
 <2.3><this> <"is just another test"   > <with><  4> <1> <"more things to trip us up!"  >    <+2.5> <"MARIA">
-<-2.3><hi> <"is just another test!!!!!"   > <full><5><1> <"funky $trings">    <+2.0> <""> <"a longer row">
+<-2.3><hi> <"is just another test!!!!!"   > <full><5><1> <"funky $trings">    <+2.0> <""> <"a longer row"><hello><world> <3> <"hi" > <3.3>  <"hello">
