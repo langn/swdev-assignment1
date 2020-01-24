@@ -3,6 +3,7 @@
 
 /**
  * A class that represents the top of the object hierarchy.
+ * Inspired from the code on piazza written by vitekj@me.com
  * author: chasebish */
 class Object {
 public:

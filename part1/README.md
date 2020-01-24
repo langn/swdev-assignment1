@@ -1,9 +1,6 @@
-------------------------------------------------------
-|           Data Adaptor for SoR Files               |
-|           by Maria Orias & Chase Bishop            |
-------------------------------------------------------
+# Assignment 1 Part 2
 
-USAGE:
+### USAGE:
 
 sorer [-h] -f SOR_FILE [-from FROM_INDEX] [-len LEN]
              [-print_col_type col_idx]
@@ -32,7 +29,7 @@ optional arguments:
     -is_missing_idx 
     -t
 
-BEHAVIOR:
+### BEHAVIOR:
 - If LEN is shorter than the file length, the program will ignore the last line, as it could be malformed
 - If FROM_LENGTH is not zero, the program will ignore the first line, as it could be malformed
 - If the program finds an malformed elements, it will ignore the entire row
