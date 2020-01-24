@@ -5,37 +5,41 @@ import re
 import enum
 import os
 
+TEST_FILE = "text.txt"
 SAMPLE_SIZE = 500
 EMPTY_RE = r"\s*>"
-BOOL_RE = r"\s*(0|1)\s*>"
-INT_RE = r"\s*(-|\+)?\d*\s*>"
-FLOAT_RE = r"\s*(-|\+)?\d*\.?\d*\s*>"
-STRING_RE = r"\s*(?:(?!>)(\S))*\s*>"
-STRING_RE_QUOTES = r"\s\"(?:(?!>)(.*))*\"\s"
-
+BOOL_RE = r"(\s)*(0|1)(\s)*>"
+INT_RE = r"(\s)*(-|\+)?\d*(\s)*>"
+FLOAT_RE = r"(\s)*(-|\+)?\d*\.?\d*(\s)*>"
+STRING_RE = r"(\s)*(?:(?!>)(\S))*(\s)*>"
+STRING_RE_QUOTES = r"(\s)*\"(?:(?!>).)*\"(\s)*>"
 
 def arg_parser():
-    parser = argparse.ArgumentParser(description='data adaptor')
-    parser.add_argument('-f', required=True,
+    parser = argparse.ArgumentParser(description='Data adaptor for SoR files')
+    parser.add_argument('-f',
                         help="path to SoR file to be read", dest='sor_file')
-    parser.add_argument('-from', type=int, default=0,
-                        help="starting position in the file (in bytes)", dest="from_index")
+    parser.add_argument('-from', type=int, default=0, required=False,
+                        help="starting position in the file (in bytes), default is 0", dest="from_index")
     parser.add_argument('-len', type=int, default=SAMPLE_SIZE,
-                        help="number of bytes to read", dest="len")
+                        help="number of bytes to read, default is 500", dest="len")
     parser.add_argument('-print_col_type', type=int,
                         help="print the type of a column: BOOL, INT, FLOAT, STRING", metavar=("col_idx"))
     parser.add_argument("-print_col_idx", type=int, nargs=2,
                         help="print the value at the column offset", metavar=("col_idx, col_offset"))
     parser.add_argument('-is_missing_idx', type=int, nargs=2,
                         help="is there a missing in the specific column offset", metavar=("col_idx, col_offset"))
+    parser.add_argument('-t', action='store_true', help="run with this flag to run tests only")
     args = parser.parse_args()
 
-    if not (args.print_col_type or args.print_col_idx or args.is_missing_idx):
+    if not (args.t):
+        if not (args.sor_file):
+            parser.error("Please pass in a SoR file name or use the [-t] flag to run tests")
+
+    if not (args.print_col_type or args.print_col_idx or args.is_missing_idx or args.t):
         parser.error(
-            'No action requested, please use -print_col_type, -print_col_idx or is_missing_idx appropriately')
+            'No action requested, please use -print_col_type, -print_col_idx , is_missing_idx  or -t appropriately')
 
     return args
-
 
 class Types(enum.Enum):
     empty = "empty"
@@ -147,14 +151,15 @@ def parse_lines(lines):
                 continue
             elif (current == "<"):
                 # find end of tag
-                typeof, matched = find_tag(line, line_index + 1)
-                if (matched):
+                entry = find_tag(line, line_index + 1)
+                if (entry):                
+                    typeof, matched = entry
                     result = remove_quotes(matched.strip())
                     entries.append((typeof, result))
                 else:
                     entries = []
                     break
-
+                
                 line_index += len(matched) + 2
             else:
                 entries = []
@@ -177,12 +182,16 @@ def print_col_idx(matrix, column, offset):
     return matrix[column][offset]
 
 def open_file(name, length, offset):
-    with open(name, "rb") as file:
-        file.seek(offset)
-        content = file.read(length)
-        decoded = content.decode("utf-8")
-        lines = decoded.split("\n")
-        return lines
+    try:
+        with open(name, "rb") as file:
+            file.seek(offset)
+            content = file.read(length)
+            decoded = content.decode("utf-8")
+            lines = decoded.split("\n")
+            return lines
+    except FileNotFoundError as e:
+        print(e)
+        exit(1)
 
 def incorrect_index():
     print("Incorrect indices")
@@ -190,6 +199,10 @@ def incorrect_index():
 
 def main():
     args = arg_parser()
+
+    if (args.t):
+        run_tests()
+        exit(0)
 
     lines = open_file(args.sor_file, args.len, args.from_index)
 
@@ -220,7 +233,7 @@ def main():
 
     print_format = (print_type and print_idx) or (print_type and print_missing) or (print_idx and print_missing)
 
-    if(print_type >= len(schema) or print_type < 0):
+    if(print_type and (print_type >= len(schema) or print_type < 0)):
         incorrect_index()
     
     if (print_idx):
@@ -249,5 +262,72 @@ def main():
             print("Is value missing at offset?")
         column, offset = args.is_missing_idx
         print(is_missing_idx(matrix, column, offset))
+
+
+def run_tests():
+    lines = open_file(TEST_FILE, 2000, 0)
+    collection = parse_lines(lines)
+    schema = find_schema(collection) 
+
+    # Schema tests
+    val = print_col_type(schema, 0)
+    assert(val == Types.afloat.value)
+    val = print_col_type(schema, 1)
+    assert(val == Types.string.value)
+    val = print_col_type(schema, 2)
+    assert(val == Types.string.value)
+    val = print_col_type(schema, 3)
+    assert(val == Types.string.value)
+    val = print_col_type(schema, 4)
+    assert(val == Types.integer.value)
+    val = print_col_type(schema, 5)
+    assert(val == Types.boolean.value)
+    val = print_col_type(schema, 6)
+    assert(val == Types.string.value)
+    val = print_col_type(schema, 7)
+    assert(val == Types.afloat.value)
+    val = print_col_type(schema, 8)
+    assert(val == Types.string.value)
+    val = print_col_type(schema, 9)
+    assert(val == Types.string.value)
+
+    matrix = construct_matrix(schema, collection)
+
+    # column value tests
+    val = print_col_idx(matrix, 1, 0)
+    assert(val == "world")
+    val = print_col_idx(matrix, 0, 1)
+    assert(val == "3.1")
+    val = print_col_idx(matrix, 0, 0)
+    assert(val == "")
+    val = print_col_idx(matrix, 3, 1)
+    assert(val == "")
+    val = print_col_idx(matrix, 7, 6)
+    assert(val == "")
+    val = print_col_idx(matrix, 2, 4)
+    assert(val == "<")
+    val = print_col_idx(matrix, 2, 10)
+    assert(val == "is just another test!!!!!")
+    val = print_col_idx(matrix, 4, 10)
+    assert(val == "5")
+    val = print_col_idx(matrix, 6, 10)
+    assert(val == "funky $trings")
+    val = print_col_idx(matrix, 7, 10)
+    assert(val == "+2.0")
+
+    # open an offset file
+    lines = open_file(TEST_FILE, 600, 20)
+    collection = parse_lines(lines)
+    schema = find_schema(collection) 
+    matrix = construct_matrix(schema, collection)
+    # last row is cut from schema
+    assert(len(schema) == 9)
+    val = print_col_idx(matrix, 1, 0)
+    # first row is cut from schema
+    assert(val == "")
+    val = is_missing_idx(matrix, 1, 0)
+    assert(val == "1")
+
+    print("Tests passing")
 
 main()
