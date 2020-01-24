@@ -1,11 +1,11 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 
 import argparse
 import re
 import enum
 import os
 
-TEST_FILE = "text.txt"
+TEST_FILE = "test/text.txt"
 SAMPLE_SIZE = 500
 EMPTY_RE = r"\s*>"
 BOOL_RE = r"(\s)*(0|1)(\s)*>"
@@ -35,7 +35,7 @@ def arg_parser():
         if not (args.sor_file):
             parser.error("Please pass in a SoR file name or use the [-t] flag to run tests")
 
-    if not (args.print_col_type or args.print_col_idx or args.is_missing_idx or args.t):
+    if not ((args.print_col_type != None) or args.print_col_idx or args.is_missing_idx or args.t):
         parser.error(
             'No action requested, please use -print_col_type, -print_col_idx , is_missing_idx  or -t appropriately')
 
@@ -227,7 +227,7 @@ def main():
     if (args.print_col_idx or args.is_missing_idx):
         matrix = construct_matrix(schema, collection)
 
-    print_type = args.print_col_type
+    print_type = args.print_col_type != None
     print_idx = args.print_col_idx
     print_missing = args.is_missing_idx
 
