@@ -6,14 +6,18 @@
  * author: chasebish */
 class Object {
 public:
+
   /** CONSTRUCTORS & DESTRUCTORS **/
+
   /** Default Object constructor */
   Object() {}
 
   /** Default Object destructor, to be overriden by subclasses */
   virtual ~Object() {}
 
+
   /** VIRTUAL METHODS **/
+
   /** Returns whether two objects are equal, to be overriden by subclasses */
   virtual bool equals(Object* obj) {}
 
@@ -26,7 +30,9 @@ public:
   /** Returns string representation of an Object, to be overriden by subclasses */
   virtual char* to_string() {}
 
+
   /** OBJECT METHODS **/
+
   /** Returns an object's hash value. Identical objects should have identical hashes */
   size_t hash() {}
 };
