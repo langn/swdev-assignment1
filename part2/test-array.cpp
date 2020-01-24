@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "array.h"
+#include "string.h"
 
 void FAIL(const char* m) {
   fprintf(stderr, "test %s failed\n", m);
@@ -28,6 +29,25 @@ void basic_object_test() {
   OK("1");
 }
 
+/** Tests String equality */
+void basic_string_test() {
+  String * x = new String("x");
+  String * x_copy = new String("x");
+  String * y = new String("y");
+  String * z = new String("z");
+
+  t_true(x->equals(x_copy), "2a");
+  t_false(x->equals(y), "2b");
+  t_false(x->equals(z), "2b");
+
+  delete z;
+  delete y;
+  delete x_copy;
+  delete x;
+
+  OK("2");
+}
+
 /** Tests pushing, popping, and length of Arrays */
 void basic_array_test() {
   Object * x = new Object();
@@ -38,18 +58,18 @@ void basic_array_test() {
   arr->push(x);
   arr->push(y);
   arr->push(z);
-  t_true(arr->length() == 3, "2a");
+  t_true(arr->length() == 3, "3a");
   arr->pop();
-  t_true(arr->length() == 2, "2b");
+  t_true(arr->length() == 2, "3b");
   arr->clear();
-  t_true(arr->length() == 0, "2c");
+  t_true(arr->length() == 0, "3c");
 
   delete arr;
   delete z;
   delete y;
   delete x;
 
-  OK("2");
+  OK("3");
 }
 
 /** Tests more complex Array functions */
@@ -70,20 +90,20 @@ void complex_array_test() {
   arr2->push(y);
   arr2->push(z);
   Object * copy_of_a = arr1->get(0);
-  t_true(copy_of_a->equals(a), "3a");
+  t_true(copy_of_a->equals(a), "4a");
   arr1->concat(arr2);
-  t_true(arr1->length() == 6, "3b");
-  t_true(arr2->length() == 3, "3c");
-  t_true(arr1->index_of(y) == 4, "3d");
-  t_true(arr2->index_of(y) == 1, "3e");
-  t_true(arr2->index_of(z) == 2, "3f");
+  t_true(arr1->length() == 6, "4b");
+  t_true(arr2->length() == 3, "4c");
+  t_true(arr1->index_of(y) == 4, "4d");
+  t_true(arr2->index_of(y) == 1, "4e");
+  t_true(arr2->index_of(z) == 2, "4f");
   arr2->remove(2);
-  t_true(arr2->index_of(z) == -1, "3g");
+  t_true(arr2->index_of(z) == -1, "4g");
   arr2->replace(1, z);
-  t_true(arr2->index_of(z) == 1, "3h");
-  t_true(arr2->index_of(y) == -1, "3i");
+  t_true(arr2->index_of(z) == 1, "4h");
+  t_true(arr2->index_of(y) == -1, "4i");
   Array * copy_of_arr1 = new Array(arr1);
-  t_true(copy_of_arr1->equals(arr1), "3j");
+  t_true(copy_of_arr1->equals(arr1), "4j");
 
   delete arr2;
   delete arr1;
@@ -94,11 +114,12 @@ void complex_array_test() {
   delete b;
   delete a;
 
-  OK("3");
+  OK("4");
 }
 
 int main() {
   basic_object_test();
+  basic_string_test();
   basic_array_test();
   complex_array_test();
   exit(0);
