@@ -12,8 +12,8 @@ def arg_parser():
                         help="path to SoR file to be read", dest='sor_file')
     parser.add_argument('-from', type=int, default=0, required=False,
                         help="starting position in the file (in bytes), default is 0", dest="from_index")
-    parser.add_argument('-len', type=int, default=SAMPLE_SIZE,
-                        help="number of bytes to read, default is 500", dest="len")
+    parser.add_argument('-len', type=int,
+                        help="number of bytes to read", dest="len")
     parser.add_argument('-print_col_type', type=int,
                         help="print the type of a column: BOOL, INT, FLOAT, STRING", metavar=("col_idx"))
     parser.add_argument("-print_col_idx", type=int, nargs=2,
@@ -44,7 +44,7 @@ def main():
     if (args.from_index != 0 and len(lines) > 0):
         lines.pop(0)
 
-    if (args.len < os.path.getsize(args.sor_file) and len(lines) > 0):
+    if ((args.len and (args.len < os.path.getsize(args.sor_file))) and len(lines) > 0):
         lines.pop()
     
     if (len(lines) < 1):
@@ -52,24 +52,24 @@ def main():
         exit(0)
 
     collection = parse_lines(lines)
-    schema = find_schema(collection)
+    schema = find_schema(collection[0:500])
 
     matrix = []
     if (args.print_col_idx or args.is_missing_idx):
         matrix = construct_matrix(schema, collection)
 
-    print_type = args.print_col_type != None
+    print_type = args.print_col_type
     print_idx = args.print_col_idx
     print_missing = args.is_missing_idx
 
     print_format = (print_type and print_idx) or (print_type and print_missing) or (print_idx and print_missing)
 
-    if(print_type and (print_type >= len(schema) or print_type < 0)):
+    if(print_type != None and (print_type >= len(schema) or print_type < 0)):
         incorrect_index()
     
     if (print_idx):
         column, offset = print_idx
-        if (column > len(schema) or column < -1 or offset >= len(matrix[column]) or offset < 0):
+        if ((column > len(schema)) or (column < -1) or (offset >= len(matrix[column])) or (offset < 0)):
             incorrect_index()
 
     if(print_missing):
@@ -77,7 +77,7 @@ def main():
         if (column > len(schema) or column < -1 or offset >= len(matrix[column]) or offset < 0):
             incorrect_index()
     
-    if print_type:
+    if(print_type != None):
         if print_format:
             print("Column type:")
         print(print_col_type(schema, args.print_col_type))

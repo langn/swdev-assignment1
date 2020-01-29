@@ -14,10 +14,10 @@ STRING_RE_QUOTES = r"(\s)*\"(?:(?!>).)*\"(\s)*>"
 
 class Types(enum.Enum):
     empty = "empty"
-    boolean = "boolean"
-    integer = "integer"
-    afloat = "float"
-    string = "string"
+    boolean = "BOOL"
+    integer = "INT"
+    afloat = "FLOAT"
+    string = "STRING"
 
 
 def length_of_row(row):
@@ -100,7 +100,7 @@ def find_tag(line, index):
                             return result
     # tag is empty
     else:
-        return result_type, ""
+        return Types.boolean, ""
 
     i, j = result.span()
     start = index + i
@@ -154,9 +154,13 @@ def print_col_idx(matrix, column, offset):
 
 def open_file(name, length, offset):
     try:
-        with open(name, "rb") as file:
+        with open(name, "rb") as file:        
             file.seek(offset)
-            content = file.read(length)
+            content = ""
+            if (length):
+                content = file.read(length)
+            else:
+                content = file.read()
             decoded = content.decode("utf-8")
             lines = decoded.split("\n")
             return lines
