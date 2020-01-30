@@ -34,8 +34,10 @@ def construct_matrix(schema, rows):
     for i in range(len(schema)):
         column = []
         for row in rows:
-            if (i >= len(row) or row[i][0] != schema[i]):
+            if i >= len(row):
                 column.append("")
+            elif row[i][0] != schema[i]:
+                column.append(row[i][1])
             else:
                 column.append(row[i][1])
 
