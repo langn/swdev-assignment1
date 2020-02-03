@@ -58,9 +58,24 @@ def find_schema(rows):
             index_longest = current_len
 
     schema = []
-    for entry in rows[longest]:
-        if (entry[0] != Types.empty):
-            schema.append(entry[0])
+    for c in range(len(rows[longest])):
+        col_type = None
+
+        for r in range(len(rows)):
+            if (c >= len(rows[r])):
+                break
+
+            current = rows[r][c]
+            if (current[0] == Types.string):
+                col_type = Types.string
+            elif (current[0] == Types.afloat and col_type != Types.string):
+                col_type = Types.afloat
+            elif (current[0] == Types.integer and col_type != Types.afloat and col_type != Types.string):
+                col_type = Types.integer
+            elif (current[0] == Types.boolean and col_type != Types.integer and col_type != Types.afloat and col_type != Types.string):
+                col_type = Types.boolean
+
+        schema.append(col_type)
 
     return schema
 
