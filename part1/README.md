@@ -6,6 +6,17 @@ The `sorer` program takes in a sor_file to parse and create a columnar represent
 ### To Build:
 `make build`
 
+### To Run:
+`make run` (runs with a text file)
+
+### To Test:
+`make test` (runs internal tests)
+
+`make build; cd otherTests; make all` (runs intstructor tests)
+
+### To Clean:
+`make clean`
+
 ### USAGE:
 
 sorer [-h] -f SOR_FILE [-from FROM_INDEX] [-len LEN]
