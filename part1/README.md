@@ -1,5 +1,8 @@
 # Assignment 1 Part 1
 
+### Overview:
+The `sorer` program takes in a sor_file to parse and create a columnar representation of data. First all the data (or the length/offset specified) is read into a 2D list where each entry represents a row of data. We use regular expressions to tokenize each entry in a row. It then determines the schema from the first 500 lines of the file or of the offset and length passed in. To find the schema we traverse each column and take the highest precedence type (String, float, integer, bool) in that column. We then create a columnar representation of the rows, filling in any missing fields with empty `<>`. Any malformed rows will be discarded.
+
 ### USAGE:
 
 sorer [-h] -f SOR_FILE [-from FROM_INDEX] [-len LEN]
@@ -22,7 +25,7 @@ optional arguments:
   -is_missing_idx col_idx, col_offset col_idx, col_offset
                         is there a missing in the specific column offset
 
-** One of the foll0wing must be passed into the program **
+** One of the following must be passed into the program **
     -print_col_type
     -print_col_idx 
     -is_missing_idx 
