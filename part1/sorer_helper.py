@@ -57,17 +57,19 @@ def find_schema(rows):
             longest = i
             index_longest = current_len
 
+
     schema = []
     for c in range(len(rows[longest])):
         col_type = None
 
         for r in range(len(rows)):
             if (c >= len(rows[r])):
-                break
+                continue
 
             current = rows[r][c]
             if (current[0] == Types.string):
                 col_type = Types.string
+                break
             elif (current[0] == Types.afloat and col_type != Types.string):
                 col_type = Types.afloat
             elif (current[0] == Types.integer and col_type != Types.afloat and col_type != Types.string):
